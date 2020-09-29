@@ -495,6 +495,77 @@ def plotting_faces(geom,pentagons,hexagons,ap=0.3,ah=0.3,ax_off=True):
 
 ##################################################################################################
 
+def find_index_of_nearest_neighbours(geom,a):
+    point = geom[a,:]
+    
+    distance = np.linalg.norm(geom-point,axis=-1)#(new_geom[:,0]-point[0])**2 + (new_geom[:,1]-point[1])**2 + (new_geom[:,2]-point[2])**2
+    np.argsort(distance)
+    return np.argsort(distance)[1:4]
+
+def sort_neighbours(geom):
+    sorted_neigh = np.empty(0)
+    for i in range(len(geom)):
+        neigh = find_index_of_nearest_neighbours(geom,i)
+        sorted_neigh = np.append(sorted_neigh,neigh)
+    return sorted_neigh.reshape(len(geom),3).astype(int)
+
+def find_face(geom):
+    n,m = np.shape(geom)
+
+    faces = np.empty([n,m])
+    neigh = sort_neighbours(geom)
+    ruv,duv = edge_displacements(geom,neigh)
+    ang = np.arccos(corner_cos_angles(duv))*180/pi
+    for i in range(n):
+        for j in range(m):
+            
+            if ang[i,j] > 114:
+                faces[i,j] = 6
+            else:
+                faces[i,j] = 5
+    
+    return faces
+##################################################################################################
+
+
+def sort_neighbour_faces(face_right,neigh):
+#
+#       m    p
+#    f5_|   |_f4
+#   p   c    b  m
+#       \f1/
+#     f2 a f3
+#        |
+#        d
+#      m/\p
+#       f6
+#
+#Neighbour face_right sorted with (a) as first neighbour in each system.
+#b{f3,f4,f1}[566]     c{f1,f5,f2}[656]    d{f2,f6,f3}[665]
+    
+    F1,F2,F3 = face_right[:,0],face_right[:,1],face_right[:,2] # Get f1,f2,f3 with respect to each point
+    b_nei = array([F3,F1]).T # make list of each face belonging in neighbour face_right
+    c_nei = array([F1,F2]).T # -||-
+    d_nei = array([F2,F3]).T # -||-
+    F_nei = np.array([b_nei,c_nei,d_nei])-5 
+    F_all = face_right[neigh]-5 # array of neighbouring faces
+
+    F_456 = np.empty(0)
+    for i in range(len(neigh)):
+        for j in range(3):
+            if sum(F_nei[j,i,:]) < sum(F_all[i,j,:]): #Does'nt work for all pentagons yet, can be fixed with an IF statement 
+                F_456 = np.append(F_456,6)
+            else: F_456 = np.append(F_456,5)
+                
+    F_456 = F_456.reshape(len(neigh),3)
+    b_Face_right_sorted = np.array([F3,F_456[:,0],F1]).T
+    c_Face_right_sorted = np.array([F1,F_456[:,1],F2]).T
+    d_Face_right_sorted = np.array([F2,F_456[:,2],F3]).T
+                          
+    return b_Face_right_sorted.astype(int), c_Face_right_sorted.astype(int), d_Face_right_sorted.astype(int)
+
+##################################################################################################
+
 def Parameters_from_geometry(face_right,neigh,MyParam = False):
     ## Calculates the force constants and parameters for the fullerene
     ## From the face information and connectivity
