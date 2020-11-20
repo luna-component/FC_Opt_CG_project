@@ -679,7 +679,6 @@ def read_geometry(file):
     
     N = None
     for i in range(len(lines)):
-        # search in the filename?? for decimal digits, wants to get the first int (but will get the float digits before point...), asks if int, what??
         #if isinstance(int(re.search(r'\d+', file).group()),int):
         #    N = int(re.search(r'\d+', file).group())
 
