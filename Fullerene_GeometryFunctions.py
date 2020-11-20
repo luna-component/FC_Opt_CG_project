@@ -679,16 +679,23 @@ def read_geometry(file):
     
     N = None
     for i in range(len(lines)):
-        if isinstance(int(re.search(r'\d+', file).group()),int):
-            N = int(re.search(r'\d+', file).group())
+        # search in the filename?? for decimal digits, wants to get the first int (but will get the float digits before point...), asks if int, what??
+        #if isinstance(int(re.search(r'\d+', file).group()),int):
+        #    N = int(re.search(r'\d+', file).group())
 
-        elif "NAtoms=" in lines[i]:
-            N = re.search(r'\d+', lines[i]).group()
-
-        else:
-            print('What is the number of atoms N ?')
+        #elif "NAtoms=" in lines[i]:
+        #    N = re.search(r'\d+', lines[i]).group()
+        #
+        #else:
+        #   print('What is the number of atoms N ?')
+        if "NAtoms=" in lines[i]:
+            N = int(re.search(r'\d+', lines[i]).group() )
+            break
+    else:
+        raise IOError('Number of atoms (N) could not be found')
 
             
+    for i in range(len(lines)):
         if "Standard orientation:" in lines[i]:
             coord_lines = lines[i+5:i+5+N]
             coord = np.array([l.split()[-3:] for l in coord_lines],dtype=float)
