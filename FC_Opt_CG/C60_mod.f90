@@ -6,13 +6,13 @@ module C60_mod
     integer(kind=INT32), parameter, private :: n = 60, m = 3
     integer(kind=INT32), parameter :: N_atoms = 60, n_neigh = 3
 
-    integer(kind=INT32) :: cubic_neighbours(m,n), face_right(m,n), & 
-                           next_on_face(m,n), prev_on_face(m,n),   &
-                           dual_neighbours(m,n), next_on_tri(m,n), &
-                           rspi(12,1)
-    integer(kind=INT32) :: pentagons(5,12), hexagons(6,20)
-    integer(kind=INT32) :: triangles(m,n)
+    integer(kind=INT32) :: cubic_neighbours(n,m), face_right(n,m), & 
+                           next_on_face(n,m), prev_on_face(n,m),   &
+                           dual_neighbours(32,6), next_on_tri(32,6), &
+                           rspi(1,12)
+    integer(kind=INT32) :: pentagons(12,5), hexagons(20,6)
+    integer(kind=INT32) :: triangles(n,m)
 
-    real(kind=REAL64)    :: points_start(m,n), points_opt(m,n), tutte_layout(2,n)
+    real(kind=REAL64)    :: points_start(n,m), points_opt(n,m), tutte_layout(n,2)
 
 end module
