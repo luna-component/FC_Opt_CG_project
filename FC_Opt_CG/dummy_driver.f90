@@ -16,20 +16,14 @@ program dummy_driver
     call C60ih_init
     seminario = .False.
 
-    write(*,*) 'rspi array:', shape(rspi)
-    write(*,*) rspi
-
     ! get some parameters, like R_0
     call geom_parameters(face_right,N_atoms,cubic_neighbours,n_neigh,seminario,geom_pars)
     
-    write(*,*) 'R_0:'
-    do k = 1, N_atoms
-        write(*,*) (geom_pars%R_0(k,:) )    
-    end do
-
-    write(*,*) 'test 2'
-    write(*,*) geom_pars%R_0(5,:)
-    write(*,*) geom_pars%R_0(60,:)
+    write(*,*) 'dih'
+!    write(*,*) 'ang0_m:'
+!    do k = 1, N_atoms
+!        write(*,*) (geom_pars%ang0_m(k,:) )    
+!    end do
 
 
 contains
