@@ -19,7 +19,7 @@ program dummy_driver
     ! get some parameters, like R_0
     call geom_parameters(face_right,N_atoms,cubic_neighbours,n_neigh,seminario,geom_pars)
     
-    write(*,*) 'dih'
+!    write(*,*) 'dih' !this line (when alone) gave emory corruption somehow?
 !    write(*,*) 'ang0_m:'
 !    do k = 1, N_atoms
 !        write(*,*) (geom_pars%ang0_m(k,:) )    

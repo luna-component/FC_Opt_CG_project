@@ -8,6 +8,7 @@ module geom_parameters_mod
 
     type geom_pars_t
         real(kind=REAL64), allocatable :: R_0(:,:)
+        real(kind=REAL64), allocatable :: f_R(:,:)
         real(kind=REAL64), allocatable :: ang0_p(:,:)
         real(kind=REAL64), allocatable :: ang0_m(:,:)
         real(kind=REAL64), allocatable :: dih_0(:,:)
@@ -20,6 +21,11 @@ module geom_parameters_mod
     real(kind=REAL64), parameter, private :: bond_angles(2) = (/108.0*pi/180.0,120.0*pi/180.0/)
     real(kind=REAL64), parameter, private :: dih_constants(2,2,2) = reshape(dcos((/0.652358d0,0.509674d0,0.509674d0, &
                                              0.345123d0,0.615841d0,0.417884d0,0.417884d0,0.0d0/)), shape=(/2,2,2/))
+    real(kind=REAL64), parameter, private :: f_const1(2) = (/100.0,100.0/), f_const2(3) = (/260.0,390.0,450.0/),     &
+                                             f_const3(4) = (/35.0,65.0,85.0,270.0/)
+    real(kind=REAL64), parameter, private :: f_const1_seminario(2) = (/207.924,216.787/),                            &
+                                             f_const2_seminario(3) = (/260.0,353.377,518.992/),                      &
+                                             f_const3_seminario(4) = (/35.0,65.0,3.772,270.0/) 
 
 
 contains
@@ -46,8 +52,9 @@ contains
         integer(kind=INT32)    :: left(N_atoms), right(N_atoms)
         !integer(kind=INT32), allocatable :: face_left(:,:)
 
-        allocate (geom_pars%R_0(N_atoms,n_neigh))
         !allocate (face_left, mold=face_right)
+        allocate (geom_pars%R_0(N_atoms,n_neigh))
+        allocate (geom_pars%f_R(N_atoms,n_neigh))
         allocate (geom_pars%ang0_p(N_atoms,n_neigh))
         allocate (geom_pars%ang0_m(N_atoms,n_neigh))
         allocate (geom_pars%dih_0(N_atoms,n_neigh))
@@ -71,11 +78,12 @@ contains
             right = face_right(:,i) - 5
             left  = face_right(:,modulo(i-2,n_neigh)+1) - 5        !py roll +1
             geom_pars%R_0(:,i) = R_constants(left+right+1)
+            geom_pars%f_R(:,i) = f_const2(left+right+1)
             geom_pars%ang0_p(:,i) = dcos(bond_angles(right+1))
             geom_pars%ang0_m(:,i) = dcos(bond_angles(left+1))
         END DO
 
-        ! fill dih. constants into array
+        ! fill equil. dih. constants into array
         DO i = 1, n_neigh
             DO j = 1, N_atoms
                 right1 = face_right(j,i) - 5
@@ -93,9 +101,9 @@ contains
 !            end do
 !        end do
 
-        write(*,*) 'dih0 '
+        write(*,*) 'fR '
         do i = 1, N_atoms
-            write(*,*) geom_pars%dih_0(i,:)
+            write(*,*) geom_pars%f_R(i,:)
         end do
 
     end subroutine
