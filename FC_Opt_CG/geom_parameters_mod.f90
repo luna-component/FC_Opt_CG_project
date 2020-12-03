@@ -13,9 +13,9 @@ module geom_parameters_mod
         real(kind=REAL64), allocatable :: ang0_p(:,:)
         real(kind=REAL64), allocatable :: ang0_m(:,:)
         real(kind=REAL64), allocatable :: f_ang(:,:)
-        real(kind=REAL64), allocatable :: fortest(:,:)
         real(kind=REAL64), allocatable :: f_ang_m(:,:)
         real(kind=REAL64), allocatable :: dih_0(:,:)
+        real(kind=REAL64), allocatable :: f_dih(:,:)
     end type geom_pars_t
 
 
@@ -64,7 +64,7 @@ contains
         allocate (geom_pars%f_ang(N_atoms,n_neigh))
         allocate (geom_pars%f_ang_m(N_atoms,n_neigh))
         allocate (geom_pars%dih_0(N_atoms,n_neigh))
-        allocate (geom_pars%fortest(N_atoms,n_neigh))
+        allocate (geom_pars%f_dih(N_atoms,n_neigh))
 
 !        ! cshift version
 !        face_left = cshift(face_right, -1, 2)
@@ -100,6 +100,7 @@ contains
                 left2  = face_right(j,mod(i+n_neigh,n_neigh)+1) - 5    !py roll -1
                 left1  = face_right(j,modulo(i-2,n_neigh)+1) - 5       !py roll -2 (same as +1)
                 geom_pars%dih_0(j,i) = dih_constants(left1+1,left2+1,right1+1)
+                geom_pars%f_dih(j,i) = f_const3(right1+left1+left2+1)
             END DO
         END DO
        
@@ -111,9 +112,9 @@ contains
 !            end do
 !        end do
 
-        write(*,*) 'fang m'
+        write(*,*) 'f dih'
         do i = 1, N_atoms
-            write(*,*) geom_pars%fortest(i,:)
+            write(*,*) geom_pars%f_dih(i,:)
         end do
 
     end subroutine
