@@ -13,6 +13,7 @@ module geom_parameters_mod
         real(kind=REAL64), allocatable :: ang0_p(:,:)
         real(kind=REAL64), allocatable :: ang0_m(:,:)
         real(kind=REAL64), allocatable :: f_ang(:,:)
+        real(kind=REAL64), allocatable :: fortest(:,:)
         real(kind=REAL64), allocatable :: f_ang_m(:,:)
         real(kind=REAL64), allocatable :: dih_0(:,:)
     end type geom_pars_t
@@ -63,6 +64,7 @@ contains
         allocate (geom_pars%f_ang(N_atoms,n_neigh))
         allocate (geom_pars%f_ang_m(N_atoms,n_neigh))
         allocate (geom_pars%dih_0(N_atoms,n_neigh))
+        allocate (geom_pars%fortest(N_atoms,n_neigh))
 
 !        ! cshift version
 !        face_left = cshift(face_right, -1, 2)
@@ -111,7 +113,7 @@ contains
 
         write(*,*) 'fang m'
         do i = 1, N_atoms
-            write(*,*) geom_pars%f_ang_m(i,:)
+            write(*,*) geom_pars%fortest(i,:)
         end do
 
     end subroutine

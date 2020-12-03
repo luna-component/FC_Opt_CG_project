@@ -6,7 +6,7 @@ FC=gfortran
 COMPILE.f08 = $(FC) $(FCFLAGS) $(TARGET_ARCH) -c
 
 # sources for the program
-SOURCES=dummy_driver.f90 geom_parameters.f90 C60_mod.f90
+SOURCES=dummy_driver.f90 geom_parameters_mod.f90 C60_mod.f90
 
 # main and clean targets
 dostuff: $(subst .f90,.o,$(SOURCES))
@@ -21,7 +21,8 @@ clean:
 	$(COMPILE.f08) -o $*.o $<
 	@touch $@
 
-## .o -> .mod of the modules it uses (when submodules present in modules)
+## .o -> .mod of the modules it uses (+when submodules present in modules)
+dummy_driver.o: C60_mod.mod geom_parameters_mod.mod
 #main.o: one.mod
 #one@proc.o: two.mod
 #two@proc.o: one.mod
