@@ -6,11 +6,14 @@ module geom_parameters_mod
 
     use iso_fortran_env, only : REAL64, INT32
 
+ ! DATA TYPES 
     type geom_pars_t
         real(kind=REAL64), allocatable :: R_0(:,:)
         real(kind=REAL64), allocatable :: f_R(:,:)
         real(kind=REAL64), allocatable :: ang0_p(:,:)
         real(kind=REAL64), allocatable :: ang0_m(:,:)
+        real(kind=REAL64), allocatable :: f_ang(:,:)
+        real(kind=REAL64), allocatable :: f_ang_m(:,:)
         real(kind=REAL64), allocatable :: dih_0(:,:)
     end type geom_pars_t
 
@@ -57,6 +60,8 @@ contains
         allocate (geom_pars%f_R(N_atoms,n_neigh))
         allocate (geom_pars%ang0_p(N_atoms,n_neigh))
         allocate (geom_pars%ang0_m(N_atoms,n_neigh))
+        allocate (geom_pars%f_ang(N_atoms,n_neigh))
+        allocate (geom_pars%f_ang_m(N_atoms,n_neigh))
         allocate (geom_pars%dih_0(N_atoms,n_neigh))
 
 !        ! cshift version
@@ -77,13 +82,16 @@ contains
         DO i = 1, n_neigh
             right = face_right(:,i) - 5
             left  = face_right(:,modulo(i-2,n_neigh)+1) - 5        !py roll +1
-            geom_pars%R_0(:,i) = R_constants(left+right+1)
-            geom_pars%f_R(:,i) = f_const2(left+right+1)
-            geom_pars%ang0_p(:,i) = dcos(bond_angles(right+1))
-            geom_pars%ang0_m(:,i) = dcos(bond_angles(left+1))
+            geom_pars%R_0(:,i)     = R_constants(left+right+1)
+            geom_pars%f_R(:,i)     = f_const2(left+right+1)
+            geom_pars%ang0_p(:,i)  = dcos(bond_angles(right+1))
+            geom_pars%f_ang(:,i)   = f_const1(right+1)
+            !todo: fang_p is equal to fang
+            geom_pars%f_ang_m(:,i) = f_const1(left+1)
+            geom_pars%ang0_m(:,i)  = dcos(bond_angles(left+1))
         END DO
 
-        ! fill equil. dih. constants into array
+        ! fill equil. dih. constants into array (todo: look into getting rid of the inner loop)
         DO i = 1, n_neigh
             DO j = 1, N_atoms
                 right1 = face_right(j,i) - 5
@@ -101,9 +109,9 @@ contains
 !            end do
 !        end do
 
-        write(*,*) 'fR '
+        write(*,*) 'fang m'
         do i = 1, N_atoms
-            write(*,*) geom_pars%f_R(i,:)
+            write(*,*) geom_pars%f_ang_m(i,:)
         end do
 
     end subroutine
